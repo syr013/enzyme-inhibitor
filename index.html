@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>효소 저해제의 작용 기전 비교: 아토르바스타틴 vs 네비라핀</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b1220;
+  --panel: #111a2e;
+  --line: #22304d;
+  --txt: #e6ecf5;
+  --sub: #93a3bd;
+  --teal: #2dd4bf;
+  --amber: #fbbf24;
+  --red: #f43f5e;
+  --blue: #60a5fa;
+  --violet: #a78bfa;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%;
+  background: #05080f;
+  overflow: hidden;
+  font-family: Pretendard, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  color: var(--txt);
+}
+#stage {
+  width: 1920px; height: 1080px;
+  position: absolute; left: 50%; top: 50%;
+  transform-origin: center;
+  background: radial-gradient(1200px 700px at 80% 10%, #13213d 0%, var(--bg) 60%);
+}
+.slide {
+  position: absolute; inset: 0;
+  padding: 60px 80px;
+  display: none; flex-direction: column;
+}
+.slide.active { display: flex; animation: fade .5s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+.eyebrow { font-size: 22px; letter-spacing: .18em; color: var(--teal); font-weight: 700; }
+h1 { font-size: 52px; font-weight: 800; line-height: 1.2; margin: 8px 0 4px; }
+h1 em { font-style: normal; background: linear-gradient(90deg, var(--teal), var(--blue)); -webkit-background-clip: text; color: transparent; }
+.lead { font-size: 22px; color: var(--sub); }
+.body { flex: 1; display: flex; gap: 40px; margin-top: 28px; min-height: 0; }
+.col { display: flex; flex-direction: column; gap: 18px; }
+
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 22px 26px;
+  position: relative;
+}
+.card h3 { font-size: 24px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
+.num {
+  width: 34px; height: 34px; border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: 18px; font-weight: 800;
+  background: rgba(45,212,191,.15); color: var(--teal);
+  border: 1px solid rgba(45,212,191,.4); flex: none;
+}
+.card p, .card li { font-size: 19px; line-height: 1.55; color: #cdd6e4; }
+.card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.card li { padding-left: 18px; position: relative; }
+.card li:before {
+  content: ""; position: absolute; left: 2px; top: 11px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--teal);
+}
+
+b { color: #fff; }
+.hl-a { color: var(--amber); font-weight: 700; }
+.hl-r { color: var(--red); font-weight: 700; }
+.hl-t { color: var(--teal); font-weight: 700; }
+.hl-b { color: var(--blue); font-weight: 700; }
+.hl-v { color: var(--violet); font-weight: 700; }
+
+.eq {
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 17px; background: #0a1324;
+  border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 14px; margin-top: 10px; color: #dbe7ff; text-align: center;
+}
+
+canvas { display: block; }
+.simwrap { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+.simcanvas { border-radius: 20px; border: 1px solid var(--line); background: #0a1120; }
+
+.controls {
+  display: flex; align-items: center; gap: 20px;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 16px; padding: 14px 22px;
+}
+.controls label { font-size: 18px; font-weight: 700; white-space: nowrap; }
+input[type=range] {
+  flex: 1; -webkit-appearance: none; height: 8px; border-radius: 4px;
+  background: linear-gradient(90deg, var(--teal) var(--p, 0%), #26324d var(--p, 0%));
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; border: 4px solid var(--teal); cursor: pointer;
+  box-shadow: 0 0 14px rgba(45,212,191,.7);
+}
+
+.meters { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.meter { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; }
+.meter .k { font-size: 15px; color: var(--sub); }
+.meter .v { font-size: 24px; font-weight: 800; margin-top: 2px; }
+
+/* Table styling for comparison */
+.comp-table { width: 100%; border-collapse: collapse; font-size: 18px; margin-top: 10px; }
+.comp-table th, .comp-table td { padding: 12px 16px; border: 1px solid var(--line); text-align: left; }
+.comp-table th { background: rgba(45,212,191,.1); color: var(--teal); font-weight: 700; }
+.comp-table td { background: rgba(17,26,46,.6); color: #cdd6e4; }
+
+.nav { position: absolute; bottom: 26px; right: 40px; display: flex; align-items: center; gap: 14px; font-size: 18px; color: var(--sub); z-index: 5; }
+.foot { position: absolute; bottom: 30px; left: 80px; font-size: 15px; color: #55657f; }
+button { font-family: inherit; font-size: 16px; padding: 8px 16px; border-radius: 10px; border: 1px solid var(--line); background: #1a2540; color: var(--txt); cursor: pointer; }
+button:hover { background: #24335a; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- ============ SLIDE 1 ============ -->
+<section class="slide active">
+  <div class="eyebrow">PART 1 · 서론 및 탐구 배경</div>
+  <h1>효소 저해제: <em>정밀 치료 전략의 정수</em></h1>
+  <div class="lead">생체 내 특정 효소의 활성을 선택적으로 억제하여 질병 진행을 차단</div>
+  <div class="body">
+    <div class="col" style="flex:1">
+      <div class="card">
+        <h3><span class="num">1</span>효소 저해제(Enzyme Inhibitor)의 개요</h3>
+        <ul>
+          <li>효소의 활성 부위나 타깃 입체 부위에 결합하여 촉매 반응 속도를 저하시키는 물질</li>
+          <li>특정 대사 경로를 선택적으로 억제함으로써 질병의 원인 인자를 제어하는 정밀 치료 기전[cite: 1]</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="num">2</span>탐구 목적</h3>
+        <ul>
+          <li><b>경쟁적 저해제:</b> <span class="hl-t">아토르바스타틴(Atorvastatin)</span>의 작용 기전 규명[cite: 1]</li>
+          <li><b>비경쟁적(올로스테릭) 저해제:</b> <span class="hl-v">네비라핀(Nevirapine)</span>의 작용 기전 규명[cite: 1]</li>
+          <li>저해 방식 차이에 따른 <b>반응 속도론(Vmax, Km) 및 분자적 결합 차이</b> 비교[cite: 1]</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col" style="flex:1">
+      <div class="card">
+        <h3><span class="num">3</span>대표 약물 Overview</h3>
+        <table class="comp-table">
+          <tr><th>구분</th><th>아토르바스타틴 (Lipitor)</th><th>네비라핀 (Viramune)</th></tr>
+          <tr><th>약물 계열</th><td>Statins (스타틴)[cite: 1]</td><td>NNRTI[cite: 1]</td></tr>
+          <tr><th>표적 효소</th><td>HMG-CoA 환원효소[cite: 1]</td><td>HIV-1 역전사효소[cite: 1]</td></tr>
+          <tr><th>저해 유형</th><td><span class="hl-t">경쟁적 저해</span>[cite: 1]</td><td><span class="hl-v">비경쟁적/올로스테릭 저해</span>[cite: 1]</td></tr>
+          <tr><th>주요 적응증</th><td>고콜레스테롤혈증, 심혈관 예방[cite: 1]</td><td>HIV-1 감염 치료[cite: 1]</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2 ============ -->
+<section class="slide">
+  <div class="eyebrow">PART 2 · 경쟁적 저해제</div>
+  <h1>아토르바스타틴: <em>HMG-CoA 환원효소 경쟁적 저해</em></h1>
+  <div class="lead">Atorvastatin Calcium (리피토정) · HMG-CoA와 활성 부위 결합 경쟁[cite: 1]</div>
+  <div class="body">
+    <div class="col" style="flex:1">
+      <div class="card">
+        <h3><span class="num">1</span>작용 기전 (Competitive Inhibition)</h3>
+        <ul>
+          <li>기질인 <span class="hl-a">HMG-CoA</span>와 구조적 유사성을 가짐[cite: 1]</li>
+          <li>효소의 <b>활성 부위(Active Site)</b>에 기질과 경쟁적으로 결합[cite: 1]</li>
+          <li>기질 농도가 매우 높아지면 저해제를 밀어내고 <span class="hl-t">최대 반응 속도(Vmax) 도달 가능</span>[cite: 1]</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="num">2</span>콜레스테롤 감소 메커니즘</h3>
+        <p>HMG-CoA 환원효소 억제 → 간세포 내 콜레스테롤 합성 감소 → 간세포 표면 <b>LDL 수용체(LDL Receptor) 발현 증가</b> → 혈액 내 LDL 흡수 및 제거 촉진 → <span class="hl-t">혈중 LDL 농도 감소</span>[cite: 1]</p>
+      </div>
+    </div>
+    <div class="simwrap">
+      <canvas id="sim1" class="simcanvas" width="850" height="420"></canvas>
+      <div class="controls">
+        <label>🧪 기질(HMG-CoA) 농도</label>
+        <input id="sub1" type="range" min="1" max="100" value="20">
+        <label style="margin-left:15px;">💊 아토르바스타틴 농도</label>
+        <input id="inh1" type="range" min="0" max="100" value="30">
+      </div>
+      <div class="meters">
+        <div class="meter"><div class="k">효소-기질 결합률</div><div class="v" id="mES1" style="color:var(--teal)">0%</div></div>
+        <div class="meter"><div class="k">효소-저해제 결합률</div><div class="v" id="mEI1" style="color:var(--amber)">0%</div></div>
+        <div class="meter"><div class="k">상대 반응 속도 (V)</div><div class="v" id="mV1" style="color:var(--blue)">0%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3 ============ -->
+<section class="slide">
+  <div class="eyebrow">PART 3 · 비경쟁적/올로스테릭 저해제</div>
+  <h1>네비라핀: <em>HIV-1 역전사효소 올로스테릭 저해</em></h1>
+  <div class="lead">Nevirapine (비라무네) · NNRTI 계열 항레트로바이러스제[cite: 1]</div>
+  <div class="body">
+    <div class="col" style="flex:1">
+      <div class="card">
+        <h3><span class="num">1</span>작용 기전 (Non-competitive / Allosteric)</h3>
+        <ul>
+          <li>효소의 활성 부위가 아닌 <span class="hl-v">타깃 입체 부위(Allosteric Site)</span>에 결합[cite: 1]</li>
+          <li>결합 시 효소의 3차원 입체 구조가 변형되어 촉매 활성 상실[cite: 1]</li>
+          <li>기질 농도를 아무리 높여도 저해 효과를 극복할 수 없어 <span class="hl-r">Vmax 감소</span>[cite: 1]</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="num">2</span>바이러스 복제 차단</h3>
+        <p>HIV 역전사효소 구조 변형 → RNA의 DNA 역전사 과정 억제 → <span class="hl-r">숙주 세포 내 바이러스 복제 차단</span>[cite: 1]</p>
+      </div>
+    </div>
+    <div class="simwrap">
+      <canvas id="sim2" class="simcanvas" width="850" height="420"></canvas>
+      <div class="controls">
+        <label>🧪 기질(RNA) 농도</label>
+        <input id="sub2" type="range" min="1" max="100" value="20">
+        <label style="margin-left:15px;">💊 네비라핀 농도</label>
+        <input id="inh2" type="range" min="0" max="100" value="30">
+      </div>
+      <div class="meters">
+        <div class="meter"><div class="k">효소 입체 구조 변형률</div><div class="v" id="mDeform" style="color:var(--red)">0%</div></div>
+        <div class="meter"><div class="k">활성 효소 비율</div><div class="v" id="mActive2" style="color:var(--teal)">0%</div></div>
+        <div class="meter"><div class="k">상대 반응 속도 (V)</div><div class="v" id="mV2" style="color:var(--blue)">0%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4 ============ -->
+<section class="slide">
+  <div class="eyebrow">PART 4 · 저해 기전 종합 비교</div>
+  <h1>경쟁적 저해 vs 비경쟁적 저해 <em>비교 분석</em></h1>
+  <div class="lead">결합 위치, 기질과의 관계, 반응 속도론적 특성 정밀 비교[cite: 1]</div>
+  <div class="body">
+    <div class="col" style="flex:1">
+      <div class="card">
+        <h3><span class="num">1</span>핵심 비교 요약표</h3>
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>구분 (Key Feature)</th>
+              <th>아토르바스타틴 (Atorvastatin)</th>
+              <th>네비라핀 (Nevirapine)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>상품명 / 계열</b></td>
+              <td>리피토 (Lipitor) / Statin[cite: 1]</td>
+              <td>비라무네 (Viramune) / NNRTI[cite: 1]</td>
+            </tr>
+            <tr>
+              <td><b>표적 효소</b></td>
+              <td>HMG-CoA 환원효소[cite: 1]</td>
+              <td>HIV-1 역전사효소[cite: 1]</td>
+            </tr>
+            <tr>
+              <td><b>저해 기전</b></td>
+              <td><span class="hl-t">경쟁적 저해 (Competitive)</span>[cite: 1]</td>
+              <td><span class="hl-v">비경쟁적 / 올로스테릭 저해</span>[cite: 1]</td>
+            </tr>
+            <tr>
+              <td><b>결합 부위</b></td>
+              <td><b>활성 부위 (Active Site)</b>[cite: 1]</td>
+              <td><b>올로스테릭 부위 (Allosteric Site)</b>[cite: 1]</td>
+            </tr>
+            <tr>
+              <td><b>기질과의 관계</b></td>
+              <td>기질과 결합 위치 경쟁[cite: 1]</td>
+              <td>기질 결합과 독립적으로 별도 결합[cite: 1]</td>
+            </tr>
+            <tr>
+              <td><b>최대 반응 속도 ($V_{max}$)</b></td>
+              <td><span class="hl-t">기질 농도 대폭 증가 시 $V_{max}$ 유지</span>[cite: 1]</td>
+              <td><span class="hl-r">기질 농도와 상관없이 $V_{max}$ 감소</span>[cite: 1]</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="foot">← → 방향키로 슬라이드 이동</div>
+<div class="nav"><button id="prev">◀</button><span id="pg">1 / 4</span><button id="next">▶</button></div>
+</div>
+
+<script>
+/* ---------- Slide Scaling & Navigation ---------- */
+const stage = document.getElementById('stage');
+function fit() {
+  const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  stage.style.transform = `translate(-50%, -50%) scale(${s})`;
+}
+addEventListener('resize', fit); fit();
+
+const slides = [...document.querySelectorAll('.slide')];
+let cur = 0;
+function go(i) {
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => s.classList.toggle('active', k === cur));
+  document.getElementById('pg').textContent = `${cur + 1} / ${slides.length}`;
+}
+document.getElementById('prev').onclick = () => go(cur - 1);
+document.getElementById('next').onclick = () => go(cur + 1);
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') go(cur + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') go(cur - 1);
+});
+
+/* ---------- Slide 2: Competitive Inhibition Sim ---------- */
+const c1 = document.getElementById('sim1'), x1 = c1.getContext('2d');
+const sub1 = document.getElementById('sub1'), inh1 = document.getElementById('inh1');
+
+function drawSim1() {
+  if (cur !== 1) return;
+  const S = +sub1.value, I = +inh1.value;
+  x1.clearRect(0, 0, c1.width, c1.height);
+  
+  // 효소 렌더링
+  const ex = 425, ey = 200, er = 70;
+  x1.fillStyle = '#1e293b'; x1.strokeStyle = '#38bdf8'; x1.lineWidth = 4;
+  x1.beginPath(); x1.arc(ex, ey, er, 0, Math.PI * 2); x1.fill(); x1.stroke();
+  
+  // 활성 부위 (Active Site)
+  x1.fillStyle = '#0f172a'; x1.beginPath(); x1.arc(ex, ey - er + 15, 25, 0, Math.PI); x1.fill();
+  x1.fillStyle = '#38bdf8'; x1.font = '600 16px Pretendard'; x1.textAlign = 'center';
+  x1.fillText('활성 부위 (Active Site)', ex, ey + 10);
+  x1.fillText('HMG-CoA 환원효소', ex, ey + 35);
+  
+  // 수식 기반 상태 계산
+  const Km = 30, Ki = 20;
+  const denominator = S + Km * (1 + I / Ki);
+  const ES = (S / denominator) * 100;
+  const EI = ((Km * (I / Ki)) / denominator) * 100;
+  const V = ES;
+
+  // 기질 및 저해제 결합 시각화
+  if (EI > ES) {
+    x1.fillStyle = '#fbbf24'; x1.beginPath(); x1.arc(ex, ey - er + 15, 20, 0, Math.PI * 2); x1.fill();
+    x1.fillStyle = '#000'; x1.font = 'bold 12px Pretendard'; x1.fillText('저해제', ex, ey - er + 20);
+  } else if (ES > 5) {
+    x1.fillStyle = '#2dd4bf'; x1.beginPath(); x1.arc(ex, ey - er + 15, 20, 0, Math.PI * 2); x1.fill();
+    x1.fillStyle = '#000'; x1.font = 'bold 12px Pretendard'; x1.fillText('기질', ex, ey - er + 20);
+  }
+
+  document.getElementById('mES1').textContent = Math.round(ES) + '%';
+  document.getElementById('mEI1').textContent = Math.round(EI) + '%';
+  document.getElementById('mV1').textContent = Math.round(V) + '%';
+}
+
+/* ---------- Slide 3: Allosteric Inhibition Sim ---------- */
+const c2 = document.getElementById('sim2'), x2 = c2.getContext('2d');
+const sub2 = document.getElementById('sub2'), inh2 = document.getElementById('inh2');
+
+function drawSim2() {
+  if (cur !== 2) return;
+  const S = +sub2.value, I = +inh2.value;
+  x2.clearRect(0, 0, c2.width, c2.height);
+  
+  const ex = 425, ey = 200, er = 70;
+  const Ki = 25, Km = 30;
+  const deformRate = (I / (I + Ki)) * 100;
+  const activeRate = 100 - deformRate;
+  const V = (S / (S + Km)) * activeRate;
+
+  // 효소 형태 변화 시각화
+  x2.save();
+  x2.translate(ex, ey);
+  if (deformRate > 50) x2.scale(1.2, 0.8); // 변형된 3차원 입체 구조 시각화
+  x2.fillStyle = deformRate > 50 ? '#450a0a' : '#1e293b';
+  x2.strokeStyle = deformRate > 50 ? '#f43f5e' : '#a78bfa';
+  x2.lineWidth = 4;
+  x2.beginPath(); x2.arc(0, 0, er, 0, Math.PI * 2); x2.fill(); x2.stroke();
+
+  // 활성 부위
+  x2.fillStyle = '#0f172a'; x2.beginPath(); x2.arc(0, -er + 15, 25, 0, Math.PI); x2.fill();
+  
+  // 올로스테릭 부위 (Allosteric Site)
+  x2.fillStyle = '#312e81'; x2.beginPath(); x2.arc(er - 15, 0, 20, 0, Math.PI * 2); x2.fill();
+  x2.restore();
+
+  // 저해제 결합 표시
+  if (I > 10) {
+    x2.fillStyle = '#a78bfa'; x2.beginPath(); x2.arc(ex + er - 15, ey, 16, 0, Math.PI * 2); x2.fill();
+  }
+
+  x2.fillStyle = '#fff'; x2.font = '600 16px Pretendard'; x2.textAlign = 'center';
+  x2.fillText('HIV 역전사효소', ex, ey + 35);
+
+  document.getElementById('mDeform').textContent = Math.round(deformRate) + '%';
+  document.getElementById('mActive2').textContent = Math.round(activeRate) + '%';
+  document.getElementById('mV2').textContent = Math.round(V) + '%';
+}
+
+function loop() {
+  drawSim1();
+  drawSim2();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
