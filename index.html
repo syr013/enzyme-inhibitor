@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>효소 저해제의 작용 기전 비교: 아토르바스타틴 vs 네비라핀</title>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
@@ -109,7 +110,6 @@ input[type=range]::-webkit-slider-thumb {
 .meter .k { font-size: 15px; color: var(--sub); }
 .meter .v { font-size: 24px; font-weight: 800; margin-top: 2px; }
 
-/* Table styling for comparison */
 .comp-table { width: 100%; border-collapse: collapse; font-size: 18px; margin-top: 10px; }
 .comp-table th, .comp-table td { padding: 12px 16px; border: 1px solid var(--line); text-align: left; }
 .comp-table th { background: rgba(45,212,191,.1); color: var(--teal); font-weight: 700; }
@@ -128,13 +128,13 @@ button:hover { background: #24335a; }
 <section class="slide active">
   <div class="eyebrow">PART 1 · 서론 및 탐구 배경</div>
   <h1>효소 저해제: <em>정밀 치료 전략의 정수</em></h1>
-  <div class="lead">생체 내 특정 효소의 활성을 선택적으로 억제하여 질병 진행을 차단</div>
+  <div class="lead">생체 내 특정 효소의 활성을 선택적으로 억제하여 질병 진행을 차단[cite: 1]</div>
   <div class="body">
     <div class="col" style="flex:1">
       <div class="card">
         <h3><span class="num">1</span>효소 저해제(Enzyme Inhibitor)의 개요</h3>
         <ul>
-          <li>효소의 활성 부위나 타깃 입체 부위에 결합하여 촉매 반응 속도를 저하시키는 물질</li>
+          <li>효소의 활성 부위나 타깃 입체 부위에 결합하여 촉매 반응 속도를 저하시키는 물질[cite: 1]</li>
           <li>특정 대사 경로를 선택적으로 억제함으로써 질병의 원인 인자를 제어하는 정밀 치료 기전[cite: 1]</li>
         </ul>
       </div>
@@ -296,7 +296,6 @@ button:hover { background: #24335a; }
 </div>
 
 <script>
-/* ---------- Slide Scaling & Navigation ---------- */
 const stage = document.getElementById('stage');
 function fit() {
   const s = Math.min(innerWidth / 1920, innerHeight / 1080);
@@ -318,7 +317,6 @@ addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft' || e.key === 'PageUp') go(cur - 1);
 });
 
-/* ---------- Slide 2: Competitive Inhibition Sim ---------- */
 const c1 = document.getElementById('sim1'), x1 = c1.getContext('2d');
 const sub1 = document.getElementById('sub1'), inh1 = document.getElementById('inh1');
 
@@ -327,25 +325,21 @@ function drawSim1() {
   const S = +sub1.value, I = +inh1.value;
   x1.clearRect(0, 0, c1.width, c1.height);
   
-  // 효소 렌더링
   const ex = 425, ey = 200, er = 70;
   x1.fillStyle = '#1e293b'; x1.strokeStyle = '#38bdf8'; x1.lineWidth = 4;
   x1.beginPath(); x1.arc(ex, ey, er, 0, Math.PI * 2); x1.fill(); x1.stroke();
   
-  // 활성 부위 (Active Site)
   x1.fillStyle = '#0f172a'; x1.beginPath(); x1.arc(ex, ey - er + 15, 25, 0, Math.PI); x1.fill();
   x1.fillStyle = '#38bdf8'; x1.font = '600 16px Pretendard'; x1.textAlign = 'center';
   x1.fillText('활성 부위 (Active Site)', ex, ey + 10);
   x1.fillText('HMG-CoA 환원효소', ex, ey + 35);
   
-  // 수식 기반 상태 계산
   const Km = 30, Ki = 20;
   const denominator = S + Km * (1 + I / Ki);
   const ES = (S / denominator) * 100;
   const EI = ((Km * (I / Ki)) / denominator) * 100;
   const V = ES;
 
-  // 기질 및 저해제 결합 시각화
   if (EI > ES) {
     x1.fillStyle = '#fbbf24'; x1.beginPath(); x1.arc(ex, ey - er + 15, 20, 0, Math.PI * 2); x1.fill();
     x1.fillStyle = '#000'; x1.font = 'bold 12px Pretendard'; x1.fillText('저해제', ex, ey - er + 20);
@@ -359,7 +353,6 @@ function drawSim1() {
   document.getElementById('mV1').textContent = Math.round(V) + '%';
 }
 
-/* ---------- Slide 3: Allosteric Inhibition Sim ---------- */
 const c2 = document.getElementById('sim2'), x2 = c2.getContext('2d');
 const sub2 = document.getElementById('sub2'), inh2 = document.getElementById('inh2');
 
@@ -374,23 +367,18 @@ function drawSim2() {
   const activeRate = 100 - deformRate;
   const V = (S / (S + Km)) * activeRate;
 
-  // 효소 형태 변화 시각화
   x2.save();
   x2.translate(ex, ey);
-  if (deformRate > 50) x2.scale(1.2, 0.8); // 변형된 3차원 입체 구조 시각화
+  if (deformRate > 50) x2.scale(1.2, 0.8);
   x2.fillStyle = deformRate > 50 ? '#450a0a' : '#1e293b';
   x2.strokeStyle = deformRate > 50 ? '#f43f5e' : '#a78bfa';
   x2.lineWidth = 4;
   x2.beginPath(); x2.arc(0, 0, er, 0, Math.PI * 2); x2.fill(); x2.stroke();
 
-  // 활성 부위
   x2.fillStyle = '#0f172a'; x2.beginPath(); x2.arc(0, -er + 15, 25, 0, Math.PI); x2.fill();
-  
-  // 올로스테릭 부위 (Allosteric Site)
   x2.fillStyle = '#312e81'; x2.beginPath(); x2.arc(er - 15, 0, 20, 0, Math.PI * 2); x2.fill();
   x2.restore();
 
-  // 저해제 결합 표시
   if (I > 10) {
     x2.fillStyle = '#a78bfa'; x2.beginPath(); x2.arc(ex + er - 15, ey, 16, 0, Math.PI * 2); x2.fill();
   }
